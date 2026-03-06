@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { SurveyService } from '../../core/services/survey.service';
 import { ResponseService } from '../../core/services/response.service';
@@ -12,7 +12,7 @@ import { SubmitSurveyPayload } from '../../models/response.model';
 @Component({
   selector: 'app-survey',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './survey.component.html',
   styleUrl: './survey.component.css'
 })
@@ -42,7 +42,7 @@ export class SurveyComponent implements OnInit {
     this.email = this.route.snapshot.queryParamMap.get('email') ?? '';
 
     if (!this.email) {
-      void this.router.navigate(['/enter-email', this.slug]);
+      void this.router.navigate(['/survey', this.slug, this.surveyCode]);
       return;
     }
 
@@ -157,7 +157,7 @@ export class SurveyComponent implements OnInit {
         this.submitting = false;
         this.submitted = true;
 
-        void this.router.navigate(['/thank-you'], {
+        void this.router.navigate(['/survey', this.slug, this.surveyCode, 'done'], {
           queryParams: {
             email: this.email,
             voucher: response.voucher_code ?? ''

@@ -3,16 +3,13 @@
   <p class="subtitle">Use one email for one survey submission only.</p>
 
   @if (loading) {
-    <p>Loading surveys...</p>
+    <p>Loading survey...</p>
+  } @else if (!survey) {
+    <p class="error">Survey link is invalid or no longer available.</p>
   } @else {
-    <form [formGroup]="form" (ngSubmit)="continueToSurvey()">
-      <label for="surveyCode">Choose survey</label>
-      <select id="surveyCode" formControlName="surveyCode">
-        @for (survey of surveys; track survey.id) {
-          <option [value]="survey.survey_code">{{ survey.title }}</option>
-        }
-      </select>
+    <p><strong>Survey:</strong> {{ survey.title }}</p>
 
+    <form [formGroup]="form" (ngSubmit)="continueToSurvey()">
       <label for="email">Email</label>
       <input id="email" type="email" formControlName="email" placeholder="you@example.com" />
 

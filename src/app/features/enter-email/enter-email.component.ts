@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { SurveyService } from '../../core/services/survey.service';
 import { ErrorStateService } from '../../core/services/error-state.service';
-import { SurveySummary } from '../../models/survey.model';
+import { SurveyDetail } from '../../models/survey.model';
 
 @Component({
   selector: 'app-enter-email',
@@ -18,7 +18,8 @@ export class EnterEmailComponent implements OnInit {
   readonly form;
 
   slug = '';
-  surveys: SurveySummary[] = [];
+  surveyCode = '';
+  survey: SurveyDetail | null = null;
   loading = true;
   checking = false;
   localError = '';
@@ -31,20 +32,17 @@ export class EnterEmailComponent implements OnInit {
     private readonly errorState: ErrorStateService
   ) {
     this.form = this.fb.nonNullable.group({
-      email: ['', [Validators.required, Validators.email]],
-      surveyCode: ['', [Validators.required]]
+      email: ['', [Validators.required, Validators.email]]
     });
   }
 
   ngOnInit(): void {
     this.slug = this.route.snapshot.paramMap.get('slug') ?? '';
+    this.surveyCode = this.route.snapshot.paramMap.get('surveyCode') ?? '';
 
-    this.surveyService.getSurveysByOrganization(this.slug).subscribe({
+    this.surveyService.getSurvey(this.slug, this.surveyCode).subscribe({
       next: (response) => {
-        this.surveys = response.data ?? [];
-        if (this.surveys.length > 0) {
-          this.form.patchValue({ surveyCode: this.surveys[0].survey_code });
-        }
+        this.survey = response.data ?? null;
         this.loading = false;
       },
       error: () => {
@@ -62,16 +60,14 @@ export class EnterEmailComponent implements OnInit {
       return;
     }
 
-    const selected = this.surveys.find((survey) => survey.survey_code === this.form.value.surveyCode);
-
-    if (!selected) {
-      this.localError = 'Selected survey not found.';
+    if (!this.survey) {
+      this.localError = 'Survey not found.';
       return;
     }
 
     this.checking = true;
 
-    this.surveyService.checkEmailUnique(selected.id, this.form.value.email ?? '').subscribe({
+    this.surveyService.checkEmailUnique(this.survey.id, this.form.value.email ?? '').subscribe({
       next: (response) => {
         this.checking = false;
 
@@ -80,7 +76,7 @@ export class EnterEmailComponent implements OnInit {
           return;
         }
 
-        void this.router.navigate(['/survey', this.slug, selected.survey_code], {
+        void this.router.navigate(['/survey', this.slug, this.surveyCode, 'form'], {
           queryParams: {
             email: this.form.value.email
           }

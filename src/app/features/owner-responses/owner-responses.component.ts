@@ -212,9 +212,43 @@ export class OwnerResponsesComponent implements OnInit, OnDestroy {
   }
 
   private rebuildSummary(): void {
-    const cards: QuestionSummaryCard[] = [];
+    const questionSourceMap = new Map<number, Question>();
+    const optionTextMap = new Map<number, Map<number, string>>();
 
     for (const question of this.questionMap.values()) {
+      questionSourceMap.set(question.id, question);
+      optionTextMap.set(
+        question.id,
+        new Map((question.options ?? []).map((option) => [option.id, option.option_text]))
+      );
+    }
+
+    for (const response of this.responses) {
+      for (const answer of response.answers ?? []) {
+        const answerQuestion = answer.question;
+        if (answerQuestion && !questionSourceMap.has(answerQuestion.id)) {
+          questionSourceMap.set(answerQuestion.id, {
+            id: answerQuestion.id,
+            user_survey_id: this.surveyId,
+            question_text: answerQuestion.question_text,
+            question_type: answerQuestion.question_type ?? 'text',
+            options: [],
+            is_required: false,
+            sort_order: answerQuestion.id
+          });
+        }
+
+        if (answer.user_survey_option_id && answer.option?.option_text) {
+          const optionMap = optionTextMap.get(answer.user_survey_question_id) ?? new Map<number, string>();
+          optionMap.set(answer.user_survey_option_id, answer.option.option_text);
+          optionTextMap.set(answer.user_survey_question_id, optionMap);
+        }
+      }
+    }
+
+    const cards: QuestionSummaryCard[] = [];
+
+    for (const question of questionSourceMap.values()) {
       if (question.question_type === 'text') {
         const textAnswers: string[] = [];
 
@@ -243,12 +277,15 @@ export class OwnerResponsesComponent implements OnInit, OnDestroy {
         continue;
       }
 
-      const labels = (question.options ?? []).map((option) => option.option_text);
-      const counts = (question.options ?? []).map((option) => {
+      const optionMap = optionTextMap.get(question.id) ?? new Map<number, string>();
+      const orderedOptionEntries = Array.from(optionMap.entries()).sort((a, b) => a[0] - b[0]);
+      const labels = orderedOptionEntries.map((entry) => entry[1]);
+      const counts = orderedOptionEntries.map((entry) => {
+        const optionId = entry[0];
         let count = 0;
         for (const response of this.responses) {
           for (const answer of response.answers ?? []) {
-            if (answer.user_survey_question_id === question.id && answer.user_survey_option_id === option.id) {
+            if (answer.user_survey_question_id === question.id && answer.user_survey_option_id === optionId) {
               count += 1;
             }
           }

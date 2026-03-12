@@ -63,6 +63,15 @@ export interface OwnerSurveyResponseItem {
     user_survey_question_id: number;
     user_survey_option_id: number | null;
     answer_text: string | null;
+    question?: {
+      id: number;
+      question_text: string;
+      question_type?: string;
+    } | null;
+    option?: {
+      id: number;
+      option_text: string;
+    } | null;
   }>;
 }
 

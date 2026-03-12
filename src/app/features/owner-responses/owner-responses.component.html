@@ -53,9 +53,9 @@
         @if (pagedResponses.length === 0) {
           <p>No response yet.</p>
         } @else {
-          @for (item of pagedResponses; track item.id) {
+          @for (item of pagedResponses; track item.id; let itemIndex = $index) {
             <button type="button" (click)="viewResponse(item.id)">
-              <strong>#{{ item.id }}</strong>
+              <strong>#{{ (page - 1) * pageSize + itemIndex + 1 }}</strong>
               <span>{{ item.respondent_email }}</span>
               <small>{{ item.submitted_at ?? '-' | date: 'medium' }}</small>
             </button>

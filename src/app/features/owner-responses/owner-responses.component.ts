@@ -70,6 +70,11 @@ export class OwnerResponsesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (!this.isBrowser) {
+      this.loading = false;
+      return;
+    }
+
     this.surveyId = Number(this.route.snapshot.paramMap.get('id') ?? '0');
     if (!this.surveyId) {
       this.loading = false;
@@ -174,7 +179,7 @@ export class OwnerResponsesComponent implements OnInit, OnDestroy {
 
     for (const answer of response.answers ?? []) {
       const questionId = answer.user_survey_question_id;
-      const question = this.questionMap.get(questionId);
+      const question = answer.question ?? this.questionMap.get(questionId);
 
       if (!grouped.has(questionId)) {
         grouped.set(questionId, {
@@ -190,7 +195,7 @@ export class OwnerResponsesComponent implements OnInit, OnDestroy {
       }
 
       if (answer.user_survey_option_id) {
-        const option = this.optionMap.get(answer.user_survey_option_id);
+        const option = answer.option ?? this.optionMap.get(answer.user_survey_option_id);
         row.answers.push(option?.option_text ?? `Option #${answer.user_survey_option_id}`);
       } else if (answer.answer_text && answer.answer_text.trim() !== '') {
         row.answers.push(answer.answer_text.trim());

@@ -4,10 +4,12 @@ import { InvalidLinkComponent } from './features/invalid-link/invalid-link.compo
 import { LandingPageComponent } from './features/landing-page/landing-page.component';
 import { OwnerCheckEmailComponent } from './features/owner-check-email/owner-check-email.component';
 import { OwnerDashboardComponent } from './features/owner-dashboard/owner-dashboard.component';
+import { OwnerForgotPasswordComponent } from './features/owner-forgot-password/owner-forgot-password.component';
 import { OwnerLayoutComponent } from './features/owner-layout/owner-layout.component';
 import { OwnerLoginComponent } from './features/owner-login/owner-login.component';
 import { OwnerRegisterComponent } from './features/owner-register/owner-register.component';
 import { OwnerResponsesComponent } from './features/owner-responses/owner-responses.component';
+import { OwnerResetPasswordComponent } from './features/owner-reset-password/owner-reset-password.component';
 import { OwnerSurveyCreateComponent } from './features/owner-survey-create/owner-survey-create.component';
 import { OwnerSurveyPreviewComponent } from './features/owner-survey-preview/owner-survey-preview.component';
 import { OwnerVerifyEmailComponent } from './features/owner-verify-email/owner-verify-email.component';
@@ -20,6 +22,8 @@ import { ownerAuthGuard } from './core/guards/owner-auth.guard';
 export const routes: Routes = [
   { path: 'owner/login', component: OwnerLoginComponent },
   { path: 'owner/register', component: OwnerRegisterComponent },
+  { path: 'owner/forgot-password', component: OwnerForgotPasswordComponent },
+  { path: 'owner/reset-password', component: OwnerResetPasswordComponent },
   { path: 'owner/check-email', component: OwnerCheckEmailComponent },
   { path: 'owner/verify-email', component: OwnerVerifyEmailComponent },
   {

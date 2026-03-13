@@ -39,6 +39,26 @@ export class OwnerAuthService {
     });
   }
 
+  forgotPassword(email: string): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(`${this.baseUrl}/user-auth/forgot-password`, {
+      email
+    });
+  }
+
+  resetPassword(
+    email: string,
+    token: string,
+    password: string,
+    passwordConfirmation: string
+  ): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(`${this.baseUrl}/user-auth/reset-password`, {
+      email,
+      token,
+      password,
+      password_confirmation: passwordConfirmation
+    });
+  }
+
   login(email: string, password: string): Observable<OwnerUser> {
     return this.http
       .post<OwnerLoginResponse>(`${this.baseUrl}/user-auth/login`, { email, password })

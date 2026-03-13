@@ -3,12 +3,20 @@
     <h1>Owner Login</h1>
     <p>Sign in to manage surveys, coin balance, and responses.</p>
 
+    @if (resetSuccessMessage) {
+      <p class="success-message">{{ resetSuccessMessage }}</p>
+    }
+
     <form [formGroup]="form" (ngSubmit)="submit()">
       <label for="email">Email</label>
       <input id="email" type="email" formControlName="email" placeholder="owner@email.com" />
 
       <label for="password">Password</label>
       <input id="password" type="password" formControlName="password" placeholder="********" />
+
+      <div class="form-links">
+        <a routerLink="/owner/forgot-password">Forgot password?</a>
+      </div>
 
       <button type="submit" [disabled]="loading || form.invalid">
         {{ loading ? 'Signing in...' : 'Sign In' }}

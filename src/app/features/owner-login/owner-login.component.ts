@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { OwnerAuthService } from '../../core/services/owner-auth.service';
 import { ErrorStateService } from '../../core/services/error-state.service';
@@ -17,6 +17,7 @@ export class OwnerLoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
   loading = false;
+  resetSuccessMessage = '';
 
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -26,10 +27,17 @@ export class OwnerLoginComponent implements OnInit {
   constructor(
     private readonly authService: OwnerAuthService,
     private readonly errorState: ErrorStateService,
+    private readonly route: ActivatedRoute,
     private readonly router: Router
   ) {}
 
   ngOnInit(): void {
+    this.errorState.clear();
+    this.resetSuccessMessage =
+      this.route.snapshot.queryParamMap.get('reset') === 'success'
+        ? 'Password reset successful. Please sign in with your new password.'
+        : '';
+
     if (this.authService.isAuthenticated()) {
       void this.router.navigate(['/owner/dashboard']);
     }

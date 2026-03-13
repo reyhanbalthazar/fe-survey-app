@@ -114,6 +114,14 @@ export class OwnerDashboardService {
     return this.http.post<ApiResponse<OwnerSurvey>>(`${this.baseUrl}/user/surveys/${surveyId}/publish`, {});
   }
 
+  suspendSurvey(surveyId: number): Observable<ApiResponse<OwnerSurvey>> {
+    return this.http.post<ApiResponse<OwnerSurvey>>(`${this.baseUrl}/user/surveys/${surveyId}/suspend`, {});
+  }
+
+  resumeSurvey(surveyId: number): Observable<ApiResponse<OwnerSurvey>> {
+    return this.http.post<ApiResponse<OwnerSurvey>>(`${this.baseUrl}/user/surveys/${surveyId}/resume`, {});
+  }
+
   getResponses(surveyId: number): Observable<ApiResponse<OwnerSurveyResponseItem[]>> {
     return this.http.get<ApiResponse<OwnerSurveyResponseItem[]>>(`${this.baseUrl}/user/surveys/${surveyId}/responses`);
   }

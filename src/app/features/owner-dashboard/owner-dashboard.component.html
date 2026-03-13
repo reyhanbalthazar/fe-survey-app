@@ -31,6 +31,7 @@
         <th>Status</th>
         <th>Responses</th>
         <th>Public Link</th>
+        <th>Expiration</th>
         <th>Action</th>
       </tr>
     </thead>
@@ -54,6 +55,7 @@
           </div>
           }
         </td>
+        <td>{{ survey.expires_at ? (survey.expires_at | date: 'medium') : 'No Expiration' }}</td>
         <td>
               @if (survey.status === 'draft') {
                 <div class="action-group">
@@ -67,7 +69,23 @@
                 </div>
           }
           @if (survey.status !== 'draft') {
-          <a [routerLink]="['/owner/surveys', survey.id, 'responses']">Review Responses</a>
+          <div class="action-group">
+            <a [routerLink]="['/owner/surveys', survey.id, 'responses']">Review Responses</a>
+            @if (survey.status === 'published' || survey.status === 'suspended') {
+            <button
+              type="button"
+              class="availability-btn"
+              (click)="toggleSurveyAvailability(survey)"
+              [disabled]="togglingSurveyId === survey.id"
+            >
+              @if (survey.status === 'published') {
+                {{ togglingSurveyId === survey.id ? 'Disabling...' : 'Disable' }}
+              } @else {
+                {{ togglingSurveyId === survey.id ? 'Enabling...' : 'Enable' }}
+              }
+            </button>
+            }
+          </div>
           }
         </td>
       </tr>

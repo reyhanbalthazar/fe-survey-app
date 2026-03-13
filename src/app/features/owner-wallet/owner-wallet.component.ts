@@ -35,7 +35,7 @@ export class OwnerWalletComponent implements OnInit {
     'debit': 'Debit',
     'credit': 'Credit'
   };
-  // ENUM('topup', 'publish_fee', 'response_fee', 'refund', 'adjustment')
+  
   readonly reasonLabels: Record<string, string> = {
     'topup': 'Topup',
     'publish_fee': 'Publish Fee',

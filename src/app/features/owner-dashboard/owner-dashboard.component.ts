@@ -16,6 +16,7 @@ import { OwnerSurvey } from '../../models/owner.model';
 export class OwnerDashboardComponent implements OnInit {
   loading = true;
   publishingId: number | null = null;
+  togglingSurveyId: number | null = null;
   publishConfirmOpen = false;
   pendingPublishSurvey: OwnerSurvey | null = null;
   copiedSurveyId: number | null = null;
@@ -132,6 +133,21 @@ export class OwnerDashboardComponent implements OnInit {
     this.publishSurvey(survey);
   }
 
+  toggleSurveyAvailability(survey: OwnerSurvey): void {
+    if (this.togglingSurveyId || this.publishingId) {
+      return;
+    }
+
+    if (survey.status === 'published') {
+      this.suspendSurvey(survey);
+      return;
+    }
+
+    if (survey.status === 'suspended') {
+      this.resumeSurvey(survey);
+    }
+  }
+
   private publishSurvey(survey: OwnerSurvey): void {
     if (this.publishingId || survey.status !== 'draft') {
       return;
@@ -154,6 +170,45 @@ export class OwnerDashboardComponent implements OnInit {
       },
       error: () => {
         this.publishingId = null;
+      }
+    });
+  }
+
+  private suspendSurvey(survey: OwnerSurvey): void {
+    this.togglingSurveyId = survey.id;
+
+    this.dashboardService.suspendSurvey(survey.id).subscribe({
+      next: (response) => {
+        const updated = response.data;
+        if (updated) {
+          this.surveys = this.surveys.map((item) => (item.id === survey.id ? { ...item, ...updated } : item));
+        }
+
+        this.togglingSurveyId = null;
+        this.refresh(false);
+      },
+      error: () => {
+        this.togglingSurveyId = null;
+      }
+    });
+  }
+
+  private resumeSurvey(survey: OwnerSurvey): void {
+    this.togglingSurveyId = survey.id;
+
+    this.dashboardService.resumeSurvey(survey.id).subscribe({
+      next: (response) => {
+        const updated = response.data;
+        if (updated) {
+          this.surveys = this.surveys.map((item) => (item.id === survey.id ? { ...item, ...updated } : item));
+        }
+
+        this.surveyAccessStatus = 'active';
+        this.togglingSurveyId = null;
+        this.refresh(false);
+      },
+      error: () => {
+        this.togglingSurveyId = null;
       }
     });
   }

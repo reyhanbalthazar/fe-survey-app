@@ -109,6 +109,11 @@ a {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+}
+
+.availability-btn {
+  background: var(--survaey-primary);
 }
 
 .dialog-backdrop {
